@@ -16,6 +16,7 @@ const peso = q => (q.t === 'gerais' ? 1 : 2);
 
 /* ================= Estado (em memória, com exportação/importação) ================= */
 function blankState() { return { attempts: {}, sims: [], read: {}, sessions: [], agenda: [], metaHoras: 12 }; }
+const STORAGE_KEY = 'caderno-ss-pmcg-2026-v1';
 let state = blankState();
 let dirty = false;
 function save() { dirty = true; if (typeof onSave === 'function') onSave(); }
@@ -31,6 +32,13 @@ function importCode(txt) {
     agenda: Array.isArray(d.agenda) ? d.agenda.filter(x => x && x.dia >= 0 && x.dia <= 6 && x.hora) : [],
     metaHoras: d.metaHoras >= 1 && d.metaHoras <= 80 ? d.metaHoras : 12 });
   dirty = false;
+  try { localStorage.setItem(STORAGE_KEY, exportCode()); } catch (e) {}
+}
+try {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) importCode(saved);
+} catch (e) {
+  state = blankState();
 }
 function recordAttempt(qid, ok) {
   const a = state.attempts[qid] || { n: 0, ok: 0 };
@@ -197,7 +205,7 @@ function viewHome() {
     <p class="page-lead">Conteúdo organizado pelos itens do edital, com ${QS.length} questões comentadas no formato da prova (quatro alternativas) e simulador cronometrado.</p>
   </div>
 
-  ${typeof auth !== 'undefined' && auth ? '' : `<div class="acct-banner"><div><b>Guarde seu progresso</b><span class="small muted">Com uma conta, suas respostas, simulados, cronograma e tempo de estudo ficam salvos e podem ser retomados em qualquer aparelho.</span></div><div class="btn-row"><button class="btn btn-primary btn-sm" data-action="open-login" data-mode="cadastro">Criar conta</button><button class="btn btn-sm" data-action="open-login">Entrar</button></div></div>`}
+  <div class="acct-banner"><div><b>Seu progresso fica salvo neste dispositivo</b><span class="small muted">Respostas, simulados, leituras e cronograma são gravados automaticamente neste navegador. Para levar seus dados a outro aparelho, use Exportar progresso.</span></div><span class="tag primary">Salvamento automático</span></div>
   <div class="strip">
     <div><div class="strip-label">Estudo nesta semana</div><div class="strip-value">${hm(studiedSince(weekStart()))}</div><div class="strip-sub">meta de ${state.metaHoras} h · ${d > 0 ? d : 0} dias até a prova</div></div>
     <div><div class="strip-label">Resumos lidos</div><div class="strip-value">${totalRead}<small> / ${totalSections}</small></div><div class="strip-sub">${pct(totalRead, totalSections)}% do conteúdo</div></div>
@@ -306,7 +314,7 @@ function footerNote() {
     <a href="https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/lei/L14601.htm" target="_blank" rel="noopener">Bolsa Família</a>,
     <a href="https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm" target="_blank" rel="noopener">LGPD</a> e
     <a href="https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm" target="_blank" rel="noopener">LAI</a>.
-    ${typeof auth !== 'undefined' && auth ? `Progresso salvo automaticamente na conta de ${esc(auth.user.nome)}.` : 'Sem login, o progresso fica disponível só enquanto a página estiver aberta. <a href="javascript:void(0)" data-action="open-login">Entre ou crie uma conta</a> para salvá-lo, ou use <a href="#/desempenho">Exportar progresso</a>.'}
+    O progresso é salvo automaticamente neste dispositivo. Para fazer uma cópia ou transferir seus dados, use <a href="#/desempenho">Exportar progresso</a>.
   </div>`;
 }
 
@@ -1003,7 +1011,7 @@ function viewStats() {
   <section class="panel" style="margin-bottom:var(--space-5)">
     <div class="panel-head"><h2>Cópia do progresso</h2></div>
     <div class="panel-body" style="display:flex;justify-content:space-between;align-items:center;gap:var(--space-4);flex-wrap:wrap">
-      <p class="muted small" style="margin:0;max-width:62ch">O progresso fica disponível enquanto esta página estiver aberta. Exporte um código para continuar depois ou em outro dispositivo.</p>
+      <p class="muted small" style="margin:0;max-width:62ch">O progresso é salvo automaticamente neste navegador. Exporte um código para criar uma cópia de segurança ou continuar em outro dispositivo.</p>
       <div class="btn-row"><button class="btn btn-primary" data-action="export">Exportar progresso</button><button class="btn" data-action="import">Importar</button></div>
     </div>
   </section>
@@ -1455,7 +1463,7 @@ document.addEventListener('click', async ev => {
     case 'sim-errors': { const ids = QS.filter(q => state.attempts[q.id] && state.attempts[q.id].last === false).map(q => q.id); startExam(shuffle(ids), { tempoAuto: true, mode: 'treino' }); break; }
     case 'export': openExport(); break;
     case 'import': openImport(); break;
-    case 'reset': { const ok = await modal({ title: 'Zerar todos os dados?', body: 'Serão apagadas todas as respostas, simulados, marcações de leitura, sessões de estudo e o cronograma. Esta ação não pode ser desfeita.', confirm: 'Zerar dados', danger: true }); if (ok) { state = blankState(); bankAnswers = {}; bankReveal = {}; exam = null; clearInterval(timerId); clearInterval(swInt); sw = null; agEdit = null; dirty = false; router(); toast('Dados zerados.'); } break; }
+    case 'reset': { const ok = await modal({ title: 'Zerar todos os dados?', body: 'Serão apagadas todas as respostas, simulados, marcações de leitura, sessões de estudo e o cronograma. Esta ação não pode ser desfeita.', confirm: 'Zerar dados', danger: true }); if (ok) { state = blankState(); try { localStorage.removeItem(STORAGE_KEY); } catch (e) {} bankAnswers = {}; bankReveal = {}; exam = null; clearInterval(timerId); clearInterval(swInt); sw = null; agEdit = null; dirty = false; router(); toast('Dados zerados.'); } break; }
   }
 });
 
@@ -1620,7 +1628,14 @@ function mergeData(a, b) {
   };
 }
 
-function onSave() { if (!auth) return; clearTimeout(syncTimer); syncTimer = setTimeout(syncNow, 1200); paintAcct(); }
+function onSave() {
+  if (!auth) {
+    try { localStorage.setItem(STORAGE_KEY, exportCode()); }
+    catch (e) { toast('Não foi possível salvar neste navegador. Exporte seu progresso para não perdê-lo.'); }
+    return;
+  }
+  clearTimeout(syncTimer); syncTimer = setTimeout(syncNow, 1200); paintAcct();
+}
 async function syncNow() {
   if (!auth) return;
   clearTimeout(syncTimer);
@@ -1644,7 +1659,7 @@ function flushSync() {
 const initials = n => n.trim().split(/\s+/).slice(0, 2).map(p => p[0]).join('').toUpperCase();
 function paintAcct() {
   const el = document.getElementById('mh-acct'); if (!el) return;
-  if (!auth) { el.innerHTML = `<button class="mh-login" data-action="open-login" type="button"><i data-lucide="log-in"></i><span>Entrar</span></button>`; icons(); return; }
+  if (!auth) { el.innerHTML = ''; return; }
   const st = auth.syncing ? 'Salvando…' : auth.error ? 'Não salvo' : 'Salvo';
   el.innerHTML = `<button class="mh-user" data-action="open-acct" type="button" aria-haspopup="dialog" title="${esc(auth.user.nome)} · ${st}">
     <span class="mh-avatar">${esc(initials(auth.user.nome))}</span><span class="mh-uname">${esc(auth.user.nome.split(' ')[0])}</span><span class="mh-dot ${auth.syncing ? 'busy' : auth.error ? 'err' : 'ok'}" aria-label="${st}"></span></button>`;
