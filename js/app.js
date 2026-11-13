@@ -409,16 +409,16 @@ function viewEdital() {
 }
 
 /* ================= Tópico ================= */
-let bankFilter = { a: 'all', status: 'all', dif: 'all' };
+let bankFilter = { a: 'all', status: 'all', dif: 'all', disciplina: 'all' };
 let bankAnswers = {};
 let bankReveal = {}; // questões respondidas cujo gabarito já foi aberto
 const isPending = qid => bankAnswers[qid] !== undefined && !bankReveal[qid];
 
 function viewTopic(t, tabRaw) {
   const [tab, qs] = tabRaw.split('?');
-  if (viewTopic.last !== t.id) { bankFilter = { a: 'all', status: 'all', dif: 'all' }; viewTopic.last = t.id; }
+  if (viewTopic.last !== t.id) { bankFilter = { a: 'all', status: 'all', dif: 'all', disciplina: 'all' }; viewTopic.last = t.id; }
   let jump = null;
-  if (qs) { const p = new URLSearchParams(qs); if (p.get('a')) bankFilter = { a: p.get('a'), status: 'all', dif: 'all' }; jump = p.get('s'); try { history.replaceState(null, '', '#/topico/' + t.id + '/' + tab); } catch (e) {} }
+  if (qs) { const p = new URLSearchParams(qs); if (p.get('a')) bankFilter = { a: p.get('a'), status: 'all', dif: 'all', disciplina: 'all' }; jump = p.get('s'); try { history.replaceState(null, '', '#/topico/' + t.id + '/' + tab); } catch (e) {} }
   if (jump) setTimeout(() => { const i = t.sections.findIndex(s => s.assunto === jump); const el = document.getElementById('sec-' + i); if (el) el.scrollIntoView({ block: 'start' }); }, 30);
   const s = topicStats(t.id);
   const items = ED.conteudo.map((c, i) => ({ c, i })).filter(x => x.c[1].includes(t.id));
@@ -468,6 +468,7 @@ function filteredBank(t) {
     if (q.t !== t.id) return false;
     if (bankFilter.a !== 'all' && q.a !== bankFilter.a) return false;
     if (bankFilter.dif !== 'all' && String(q.dif) !== bankFilter.dif) return false;
+    if (bankFilter.disciplina !== 'all' && q.disciplina !== bankFilter.disciplina) return false;
     const at = state.attempts[q.id];
     if (bankFilter.status === 'new' && at) return false;
     if (bankFilter.status === 'wrong' && !(at && at.last === false)) return false;
@@ -481,6 +482,7 @@ function viewBank(t) {
   const opt = (v, l, cur) => `<option value="${v}" ${cur === v ? 'selected' : ''}>${l}</option>`;
   const st = topicStats(t.id);
   const all = QS.filter(q => q.t === t.id);
+  const disciplines = [...new Set(all.map(q => q.disciplina).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
   const dist = [1, 2, 3].map(d => all.filter(q => q.dif === d).length);
   return `
   <div class="bank-sum">
@@ -493,6 +495,7 @@ function viewBank(t) {
   <div class="filters">
     <label class="sr-only" for="f-a">Assunto</label>
     <select class="select" id="f-a" data-filter="a">${opt('all', 'Todos os assuntos', bankFilter.a)}${t.assuntos.map(a => opt(a.id, a.name, bankFilter.a)).join('')}</select>
+    ${disciplines.length ? `<label class="sr-only" for="f-disciplina">Disciplina curricular</label><select class="select" id="f-disciplina" data-filter="disciplina">${opt('all', 'Todas as disciplinas', bankFilter.disciplina)}${disciplines.map(d => opt(d, esc(d), bankFilter.disciplina)).join('')}</select>` : ''}
     <label class="sr-only" for="f-dif">Dificuldade</label>
     <select class="select" id="f-dif" data-filter="dif">${opt('all', 'Qualquer dificuldade', bankFilter.dif)}${opt('1', 'Fácil', bankFilter.dif)}${opt('2', 'Média', bankFilter.dif)}${opt('3', 'Difícil', bankFilter.dif)}</select>
     <label class="sr-only" for="f-status">Situação</label>
@@ -573,11 +576,11 @@ function qCard(q, num) {
 
 
 /* ===== Resolver questões (prática livre, separada do simulado) ===== */
-const QZ_BLANK = () => ({ t: 'all', a: 'all', dif: 'all', status: 'all', fmt: 'all', busca: '' });
+const QZ_BLANK = () => ({ t: 'all', a: 'all', dif: 'all', disciplina: 'all', status: 'all', fmt: 'all', busca: '' });
 let qz = QZ_BLANK();
 let qzOpt = { modo: 'lista', ordem: 'edital' };
 let qzIdx = 0, qzPage = 0, qzRand = {}, qzOpen = false;
-const qzActive = () => ['t', 'a', 'dif', 'status', 'fmt'].filter(k => qz[k] !== 'all').length + (qz.busca.trim() ? 1 : 0);
+const qzActive = () => ['t', 'a', 'dif', 'disciplina', 'status', 'fmt'].filter(k => qz[k] !== 'all').length + (qz.busca.trim() ? 1 : 0);
 const QZ_STEP = 20;
 let qzShown = QZ_STEP;
 const TORDER = Object.fromEntries(TOPICS.map((t, i) => [t.id, i]));
@@ -590,6 +593,7 @@ function qzList() {
     if (qz.t !== 'all' && q.t !== qz.t) return false;
     if (qz.a !== 'all' && q.a !== qz.a) return false;
     if (qz.dif !== 'all' && String(q.dif) !== qz.dif) return false;
+    if (qz.disciplina !== 'all' && q.disciplina !== qz.disciplina) return false;
     if (qz.fmt !== 'all' && qFormat(q) !== qz.fmt) return false;
     const at = state.attempts[q.id];
     if (qz.status === 'new' && at) return false;
@@ -608,6 +612,8 @@ function qzResetPos() { qzIdx = 0; qzPage = 0; qzShown = QZ_STEP; }
 function viewPractice() {
   const opt = (v, l, cur) => `<option value="${v}" ${cur === v ? 'selected' : ''}>${l}</option>`;
   const tSel = qz.t !== 'all' ? TMAP[qz.t] : null;
+  const disciplinePool = QS.filter(q => qz.t === 'all' || q.t === qz.t).map(q => q.disciplina).filter(Boolean);
+  const disciplineOptions = [...new Set(disciplinePool)].sort((a, b) => a.localeCompare(b, 'pt-BR'));
   const counts = { af: 0, inc: 0, dir: 0 }; QS.forEach(q => counts[qFormat(q)]++);
   return `
   <div class="page-head">
@@ -621,6 +627,7 @@ function viewPractice() {
       <div class="qz-grid">
         <div class="fg"><label for="qz-t">Tópico</label><select class="select" id="qz-t" data-qz="t">${opt('all', 'Todos os tópicos', qz.t)}${TOPICS.map(t => opt(t.id, t.num + ' · ' + esc(t.title), qz.t)).join('')}</select></div>
         <div class="fg"><label for="qz-a">Assunto</label><select class="select" id="qz-a" data-qz="a" ${tSel ? '' : 'disabled'}>${opt('all', tSel ? 'Todos os assuntos' : 'Escolha um tópico', qz.a)}${tSel ? tSel.assuntos.map(a => opt(a.id, esc(a.name), qz.a)).join('') : ''}</select></div>
+        <div class="fg"><label for="qz-disciplina">Disciplina curricular</label><select class="select" id="qz-disciplina" data-qz="disciplina">${opt('all', 'Todas as disciplinas', qz.disciplina)}${disciplineOptions.map(d => opt(d, esc(d), qz.disciplina)).join('')}</select></div>
         <div class="fg"><label for="qz-dif">Dificuldade</label><select class="select" id="qz-dif" data-qz="dif">${opt('all', 'Qualquer', qz.dif)}${opt('1', 'Fácil', qz.dif)}${opt('2', 'Média', qz.dif)}${opt('3', 'Difícil', qz.dif)}</select></div>
         <div class="fg"><label for="qz-status">Situação</label><select class="select" id="qz-status" data-qz="status">${opt('all', 'Todas', qz.status)}${opt('new', 'Não resolvidas', qz.status)}${opt('wrong', 'Errei na última', qz.status)}${opt('right', 'Acertei na última', qz.status)}</select></div>
         <div class="fg"><label for="qz-fmt">Formato</label><select class="select" id="qz-fmt" data-qz="fmt">${opt('all', 'Todos', qz.fmt)}${opt('dir', 'Direta (' + counts.dir + ')', qz.fmt)}${opt('af', 'Afirmativas I a IV (' + counts.af + ')', qz.fmt)}${opt('inc', 'Incorreta / exceto (' + counts.inc + ')', qz.fmt)}</select></div>
@@ -1461,7 +1468,7 @@ document.addEventListener('click', async ev => {
     case 'qz-next': qzIdx++; qzRefresh(true); break;
     case 'qz-go': qzIdx = +el.dataset.i; qzRefresh(true); break;
     case 'qz-page': qzPage = +el.dataset.v; qzRefresh(true); break;
-    case 'clear-filters': bankFilter = { a: 'all', status: 'all', dif: 'all' }; rerenderKeepScroll(); break;
+    case 'clear-filters': bankFilter = { a: 'all', status: 'all', dif: 'all', disciplina: 'all' }; rerenderKeepScroll(); break;
     case 'preset': applyPreset(el.dataset.p); rerenderKeepScroll(); break;
     case 'preset-sim': { applyPreset(el.dataset.p); const pool = poolFromCfg(); startExam(pickQuestions(pool, cfg.n, 'mix').map(q => q.id), cfg); break; }
     case 'topic-sim': { const pool = QS.filter(q => q.t === el.dataset.t); startExam(shuffle(pool).map(q => q.id), { tempoAuto: true, mode: 'prova' }); break; }
@@ -1559,7 +1566,7 @@ document.addEventListener('change', ev => {
   const f = ev.target.dataset.filter;
   if (f) { bankFilter[f] = ev.target.value; rerenderKeepScroll(); return; }
   const z = ev.target.dataset.qz;
-  if (z) { qz[z] = ev.target.value; if (z === 't') qz.a = 'all'; qzResetPos(); rerenderKeepScroll(); return; }
+  if (z) { qz[z] = ev.target.value; if (z === 't') { qz.a = 'all'; qz.disciplina = 'all'; } qzResetPos(); rerenderKeepScroll(); return; }
   if (ev.target.dataset.cfgKey) { cfg.sel[ev.target.dataset.cfgKey] = ev.target.checked; rerenderKeepScroll(); return; }
   if (ev.target.dataset.cfgTopic) { const t = TMAP[ev.target.dataset.cfgTopic]; t.assuntos.forEach(a => cfg.sel[t.id + ':' + a.id] = ev.target.checked); rerenderKeepScroll(); return; }
 });
