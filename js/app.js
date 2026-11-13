@@ -199,10 +199,31 @@ function viewHome() {
   const weak = weakest(4);
   const d = daysLeft();
   return `
-  <div class="page-head">
-    <div class="crumb">Edital nº 01/2026 · Prefeitura Municipal de Campina Grande/PB · IDECAN</div>
-    <h1 class="page-title">Assistente Social Educacional</h1>
-    <p class="page-lead">Conteúdo organizado pelos itens do edital, com ${QS.length} questões comentadas no formato da prova (quatro alternativas) e simulador cronometrado.</p>
+  <section class="home-hero">
+    <div class="home-hero-copy">
+      <div class="home-eyebrow"><span class="home-eyebrow-dot"></span> SUA JORNADA DE PREPARAÇÃO</div>
+      <div class="crumb">CONCURSO PMCG 2026 <span>·</span> BANCA IDECAN</div>
+      <h1>Rumo à <span>Aprovação.</span></h1>
+      <p>Um espaço organizado para transformar seu plano de estudos em preparação de verdade para Assistente Social Educacional.</p>
+      <div class="home-hero-actions">
+        <a class="btn btn-primary" href="#/questoes"><i data-lucide="book-open"></i> Começar a estudar</a>
+        <a class="btn home-hero-secondary" href="#/edital">Consultar edital <i data-lucide="arrow-up-right"></i></a>
+      </div>
+    </div>
+    <div class="home-hero-side">
+      <div class="home-hero-mark"><i data-lucide="graduation-cap"></i></div>
+      <div class="home-hero-side-label">SUA PRÓXIMA CONQUISTA</div>
+      <div class="home-hero-count">${d > 0 ? d : 0}<small>dias</small></div>
+      <div class="home-hero-side-note">até a prova objetiva</div>
+      <div class="home-hero-date"><i data-lucide="calendar-days"></i> 10 de janeiro de 2027</div>
+    </div>
+    <div class="home-hero-foot"><span>ASSISTENTE SOCIAL EDUCACIONAL</span><span>PREFEITURA DE CAMPINA GRANDE · PB</span></div>
+  </section>
+
+  <div class="home-progress">
+    <div class="home-progress-top"><div><b>Seu progresso de preparação</b><span>Resumos concluídos</span></div><strong>${pct(totalRead, totalSections)}%</strong></div>
+    <div class="home-progress-track"><span style="width:${pct(totalRead, totalSections)}%"></span></div>
+    <div class="home-progress-bottom"><span>${totalRead} de ${totalSections} resumos lidos</span><span>${totalSections - totalRead} restantes</span></div>
   </div>
 
   <div class="acct-banner"><div><b>Seu progresso fica salvo neste dispositivo</b><span class="small muted">Respostas, simulados, leituras e cronograma são gravados automaticamente neste navegador. Para levar seus dados a outro aparelho, use Exportar progresso.</span></div><span class="tag primary">Salvamento automático</span></div>
