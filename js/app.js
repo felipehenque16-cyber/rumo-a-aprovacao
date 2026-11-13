@@ -1680,7 +1680,7 @@ if (installButton) {
   window.addEventListener('appinstalled', () => {
     installPrompt = null;
     installButton.hidden = true;
-    toast('Caderno SS instalado no aparelho.');
+    toast('Rumo à Aprovação instalado no aparelho.');
   });
   installButton.addEventListener('click', async () => {
     if (installPrompt) {
@@ -1692,7 +1692,7 @@ if (installButton) {
     const howTo = isIOS
       ? 'No Safari, toque em Compartilhar e depois em “Adicionar à Tela de Início”.'
       : 'No menu do navegador, escolha “Instalar app” ou “Adicionar à tela inicial”. Se a opção não aparecer, abra este site em um endereço HTTPS.';
-    await modal({ title: 'Instalar Caderno SS', body: howTo, confirm: 'Entendi', cancel: '' });
+    await modal({ title: 'Instalar Rumo à Aprovação', body: howTo, confirm: 'Entendi', cancel: '' });
   });
   if (isIOS && !installButton.hidden) installButton.hidden = false;
   icons();
