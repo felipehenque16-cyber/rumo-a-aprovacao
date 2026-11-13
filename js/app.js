@@ -519,7 +519,7 @@ function qMeta(q, num) {
   const at = state.attempts[q.id];
   return `<div class="q-meta">
     ${num !== undefined ? `<span class="q-num">Questão ${String(num).padStart(2, '0')}</span>` : ''}
-    ${parseRoute()[0] === 'questoes' ? `<span class="faint tnum">${TMAP[q.t].num}</span>` : ''}<span>${esc(ANAME[q.t + ':' + q.a])}</span><span class="sep">·</span><span>${difLabel(q.dif)}</span>
+    ${parseRoute()[0] === 'questoes' ? `<span class="faint tnum">${TMAP[q.t].num}</span>` : ''}<span>${esc(ANAME[q.t + ':' + q.a])}</span>${q.disciplina ? `<span class="sep">·</span><span class="q-discipline">${esc(q.disciplina)}</span>` : ''}<span class="sep">·</span><span>${difLabel(q.dif)}</span>
     ${isPending(q.id) ? '<span class="right tag primary">Respondida</span>' : at ? `<span class="right tag ${at.last ? 'ok' : 'bad'}">${at.ok}/${at.n} acertos</span>` : ''}
   </div>`;
 }
