@@ -1630,7 +1630,7 @@ function mergeData(a, b) {
 
 function onSave() {
   if (!auth) {
-    try { localStorage.setItem(STORAGE_KEY, exportCode()); }
+    try { localStorage.setItem(STORAGE_KEY, exportCode()); dirty = false; }
     catch (e) { toast('Não foi possível salvar neste navegador. Exporte seu progresso para não perdê-lo.'); }
     return;
   }
