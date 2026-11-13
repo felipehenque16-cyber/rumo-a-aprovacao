@@ -912,8 +912,9 @@ async function finishExam(auto) {
   });
   const rec = { id: e.id, date: Date.now(), n: e.qs.length, acertos, erros, brancos, pts, ptsMax, espOk, espN,
     score: pct(acertos, e.qs.length), used: e.total - e.remaining, total: e.total, mode: e.mode, preset: e.preset, por, qs: e.qs, answers: e.answers, auto: !!auto };
-  state.sims.push(rec); save();
+  state.sims.push(rec);
   if (state.sims.length > 40) state.sims = state.sims.slice(-40);
+  save();
   exam = null;
   if (auto) toast('Tempo esgotado: prova entregue automaticamente.');
   location.hash = '#/simulado/resultado/' + rec.id;
@@ -1075,7 +1076,7 @@ const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 
 const dayIdx = d => (d.getDay() + 6) % 7;
 function weekStart(ts) { const d = new Date(ts == null ? Date.now() : ts); d.setHours(0, 0, 0, 0); return d.getTime() - dayIdx(d) * 86400000; }
 function dayStart(ts) { const d = new Date(ts == null ? Date.now() : ts); d.setHours(0, 0, 0, 0); return d.getTime(); }
-function studiedSince(t0, t1 = Infinity) { return state.sessions.filter(s => s.start >= t0 && s.start < t1).reduce((a, s) => a + s.dur, 0) + (sw && sw.startedAt >= t0 ? swElapsed() : 0); }
+function studiedSince(t0, t1 = Infinity) { return state.sessions.filter(s => s.start >= t0 && s.start < t1).reduce((a, s) => a + s.dur, 0) + (sw && sw.startedAt >= t0 && sw.startedAt < t1 ? swElapsed() : 0); }
 function hm(sec) { const m = Math.round(sec / 60); const h = Math.floor(m / 60), r = m % 60; return h ? `${h}h${String(r).padStart(2, '0')}` : `${r} min`; }
 function topicLabel(t, a) { if (!t || !TMAP[t]) return 'Estudo geral'; return TMAP[t].num + ' · ' + TMAP[t].title + (a && ANAME[t + ':' + a] ? ' — ' + ANAME[t + ':' + a] : ''); }
 function topicOptions(sel) { return `<option value="">Estudo geral (sem tópico)</option>` + TOPICS.map(t => `<option value="${t.id}" ${sel === t.id ? 'selected' : ''}>${t.num} · ${esc(t.title)}</option>`).join(''); }
