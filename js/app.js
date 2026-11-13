@@ -96,7 +96,7 @@ const readCount = t => t.sections.filter(s => state.read[t.id + ':' + s.assunto]
 function renderMast() {
   const d = daysLeft();
   $('#mh-exam').innerHTML = d > 0
-    ? `<span class="mh-lbl">Prova objetiva</span><span class="mh-date"><b>dom., 10/01/2027</b> · 8h às 11h</span><span class="mh-count" title="Dias até a prova"><b>${d}</b> ${d === 1 ? 'dia' : 'dias'}</span>`
+    ? `<span class="mh-lbl">Prova objetiva</span><span class="mh-date"><b>dom., 10/01/2027</b> · 14h às 17h</span><span class="mh-count" title="Dias até a prova"><b>${d}</b> ${d === 1 ? 'dia' : 'dias'}</span>`
     : `<span class="mh-lbl">Prova objetiva realizada em 10/01/2027</span>`;
   const swEl = $('#mh-sw');
   if (swEl) { swEl.hidden = !sw; swEl.innerHTML = sw ? `<i data-lucide="timer"></i><span id="mh-sw-time">${fmtTime(sw.acc)}</span>` : ''; }
