@@ -1,5 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="112" fill="#1f3a5f"/>
-  <path d="M115 124h282v28H115zm0 55h282v28H115zm0 55h180v28H115z" fill="#b8c6d9"/>
-  <text x="256" y="370" fill="#fff" font-family="Arial,sans-serif" font-size="150" font-weight="700" text-anchor="middle">SS</text>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#244b78"/>
+      <stop offset="1" stop-color="#142b49"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <path d="M100 151c54-24 105-18 156 13v226c-51-31-102-37-156-13z" fill="#f8fbff"/>
+  <path d="M412 151c-54-24-105-18-156 13v226c51-31 102-37 156-13z" fill="#dce9f7"/>
+  <path d="M256 164v226" fill="none" stroke="#9fb8d5" stroke-width="10" stroke-linecap="round"/>
+  <path d="M145 213c31-8 61-4 87 9M145 253c31-8 61-4 87 9M367 213c-31-8-61-4-87 9M367 253c-31-8-61-4-87 9" fill="none" stroke="#8ca7c7" stroke-width="10" stroke-linecap="round"/>
+  <path d="M256 324V100m-66 66 66-66 66 66" fill="none" stroke="#f4c66a" stroke-width="25" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="378" cy="104" r="15" fill="#f4c66a"/>
 </svg>
