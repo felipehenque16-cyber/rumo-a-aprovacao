@@ -817,3 +817,8 @@ button, input, select, textarea { transition: border-color .18s ease, background
   .strip > div { min-height: 102px; padding: 14px; }
   .strip-value { font-size: 24px; }
 }
+
+
+/* Identidade visual — Rumo à Aprovação */
+.mh-logo { overflow: hidden; border: 0; padding: 0; border-radius: 8px; }
+.mh-logo img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
