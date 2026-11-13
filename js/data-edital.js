@@ -1,6 +1,6 @@
 /* Dados do concurso — Edital nº 01/2026 (PMCG/IDECAN) e Retificação nº 05/2026 */
 window.EDITAL = {
-  prova: '2027-01-10T08:00:00-03:00',
+  prova: '2027-01-10T14:00:00-03:00',
   links: {
     edital: 'https://campinagrande.pb.gov.br/wp-content/uploads/2026/05/EDITAL-CAMPINA-GRANDE-GERAL_REVISAdo-1.pdf',
     retif5: 'https://dhg1h5j42swfq.cloudfront.net/2026/09/18000959/datas-campina-grande.pdf',
@@ -16,7 +16,7 @@ window.EDITAL = {
     ['Jornada', '30 horas semanais'],
     ['Vagas', '25 — 19 ampla concorrência, 3 PcD e 3 pessoas negras (Retificação nº 05/2026)'],
     ['Etapas', 'Prova objetiva (eliminatória e classificatória) e prova de títulos (classificatória)'],
-    ['Prova objetiva', 'Domingo, 10/01/2027, turno da manhã, em Campina Grande — 3 horas de duração'],
+    ['Prova objetiva', 'Domingo, 10/01/2027, turno da tarde, das 14h às 17h, em Campina Grande — portões abertos às 13h e fechados às 14h; duração de 3 horas'],
     ['Locais de prova', 'Divulgação prevista para 30/12/2026']
   ],
   composicao: [
@@ -51,7 +51,7 @@ window.EDITAL = {
   cronograma: [
     ['27/10/2026', 'Resultado definitivo das inscrições (PcD, pessoas negras e atendimento especial)'],
     ['30/12/2026', 'Divulgação dos locais de prova'],
-    ['10/01/2027', 'Prova objetiva — domingo, manhã'],
+    ['10/01/2027', 'Prova objetiva — domingo, tarde (14h às 17h; portões das 13h às 14h)'],
     ['11/01/2027', 'Gabarito preliminar'],
     ['12 e 13/01/2027', 'Recursos contra o gabarito preliminar'],
     ['01/02/2027', 'Gabarito definitivo e resultado preliminar da prova objetiva'],
